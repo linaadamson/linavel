@@ -9,12 +9,14 @@ class TodoController
         $this->todos = [];
     }
 
-    public function addTodos($todo)
+    public function addTodo(Request $request)
     {
-        $this->todos[] = $todo;
+        $params = $request->getRequestBody();
+        $this->todos[] = $params;
+        return json_encode($this->todos);
     }
 
-    public function getTodos()
+    public function getTodos(Request $request)
     {
         return json_encode($this->todos);
     }

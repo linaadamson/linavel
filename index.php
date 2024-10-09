@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/Utils/Request.php';
 
 $path = $_SERVER['PATH_INFO'] ?? '/';
 
@@ -25,7 +26,8 @@ if (file_exists($controller_file)) {
         $controller_object = new $controller();
 
         if (method_exists($controller_object, $action)) {
-            print_r($controller_object->$action());
+            $request = new Request();
+            print_r($controller_object->$action($request));
         } else {
             echo "Action '$action' not found in controller '$controller'";
         }
@@ -35,5 +37,5 @@ if (file_exists($controller_file)) {
     }
 
 } else {
-    echo 'The file does not exist';
+    echo 'The controller does not exist';
 }
