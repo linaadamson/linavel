@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/Utils/Request.php';
+require_once __DIR__ . '/../app/Utils/Request.php';
 
-$path = $_SERVER['PATH_INFO'] ?? '/';
+$path = $_SERVER['REDIRECT_URL'] ?? '/';
 
 if ($path === '/') {
     echo "Linavel V1";
@@ -17,7 +17,7 @@ if (empty($action)) {
     exit();
 }
 
-$controller_file = __DIR__ . '/Controllers/' . $controller . '.php';
+$controller_file = __DIR__ . '/../app/Controllers/' . $controller . '.php';
 
 if (file_exists($controller_file)) {
     require_once $controller_file;
