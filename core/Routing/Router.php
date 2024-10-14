@@ -52,19 +52,13 @@ class Router
         }
     }
 
-    protected function addRoute($method, $uri, $controller, $action)
-    {
-        $route = $this->createRoute($method, $uri, $controller, $action);
-        $this->routes[$method][$uri] = $route;
-        return $route;
-    }
-
     /**
      * @return \Core\Routing\Route
      */
-    protected function createRoute($method, $uri, $controller, $action)
+    protected function addRoute($method, $uri, $controller, $action)
     {
         $route = new Route($method, $uri, $controller, $action);
+        $this->routes[$method][$uri] = $route;
         return $route;
     }
 
