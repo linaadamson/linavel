@@ -1,4 +1,7 @@
 <?php
+namespace App\Controllers;
+
+use Core\Http\Request;
 
 class TodoController
 {
@@ -16,8 +19,13 @@ class TodoController
         return json_encode($this->todos);
     }
 
-    public function getTodos(Request $request)
+    public function getTodos()
     {
         return json_encode($this->todos);
+    }
+
+    public function test()
+    {
+        echo 'working';
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
+namespace Core\Http;
 class Request
 {
     private $method;
+    private $path;
 
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
@@ -12,11 +14,17 @@ class Request
     public function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->path = $_SERVER['REQUEST_URI'];
     }
 
     public function getMethod()
     {
         return $this->method;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
     }
 
     public function getQuery()

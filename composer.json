@@ -1,0 +1,10 @@
+{
+  "name": "linavel/php-framework",
+  "description": "Custom PHP framework",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Core\\": "core/"
+    }
+  }
+}
