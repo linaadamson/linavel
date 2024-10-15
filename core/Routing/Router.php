@@ -27,26 +27,11 @@ class Router
     public function run()
     {
         try {
-
             $route = $this->findRoute($this->current_request->getMethod(), $this->current_request->getPath());
-
             if (!$route) {
                 throw new \Exception('Route not found', 404);
             }
-
-            $class = "App\\Controllers\\$route->controller";
-
-            if (!class_exists($class)) {
-                throw new \Exception("$class does not exist", 500);
-            }
-
-            $action = $route->action;
-            if (method_exists($class, $action)) {
-                $object = new $class();
-                echo $object->$action($this->current_request);
-            } else {
-                throw new \Exception("Action $action not found in controller $route->controller", 500);
-            }
+            echo $route->dispatchAction();
         } catch (\Exception $err) {
             echo $err->getMessage();
         }
@@ -65,11 +50,20 @@ class Router
     protected function findRoute($method, $path)
     {
         foreach ($this->routes[$method] as $uri => $route_obj) {
-            if ($path == $uri) {
-                return $route_obj;
+            $route_regex = $route_obj->getPathRegex();
+
+            if (preg_match($route_regex, $path, $matches)) {
+                array_shift($matches);
+                $param_values = $matches ?? [];
+                $param_names = [];
+
+                if (preg_match_all('/{(\w+)(:[^}]+)?}/', $uri, $matches)) {
+                    $param_names = $matches[1];
+                }
+                $route_params = array_combine($param_names, $param_values);
+                return $route_obj->setRouteParams($route_params);
             }
         }
-
         return null;
     }
 }
