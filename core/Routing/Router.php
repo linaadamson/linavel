@@ -31,7 +31,7 @@ class Router
             if (!$route) {
                 throw new \Exception('Route not found', 404);
             }
-            echo $route->dispatchAction();
+            echo $route->dispatchAction($this->current_request);
         } catch (\Exception $err) {
             echo $err->getMessage();
         }

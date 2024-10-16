@@ -6,18 +6,15 @@ use Core\Http\Request;
 class TodoController
 {
     protected $todos;
-    /** @var Request */
-    protected $request;
 
     public function __construct()
     {
         $this->todos = [];
-        $this->request = new Request();
     }
 
-    public function addTodo()
+    public function addTodo(Request $request)
     {
-        $params = $this->request->getRequestBody();
+        $params = $request->getRequestBody();
         $this->todos[] = $params;
         return json_encode($this->todos);
     }
@@ -27,7 +24,7 @@ class TodoController
         return json_encode($this->todos);
     }
 
-    public function getOne($id, $name)
+    public function getOne($name, $id)
     {
         echo $id;
         echo $name;
