@@ -14,14 +14,14 @@ class Router
         $this->current_request = new Request();
     }
 
-    public function get($uri, $controller, $action)
+    public function get($uri, $action)
     {
-        return $this->addRoute('GET', $uri, $controller, $action);
+        return $this->addRoute($this->current_request::METHOD_GET, $uri, $action);
     }
 
-    public function post($uri, $controller, $action)
+    public function post($uri, $action)
     {
-        return $this->addRoute('POST', $uri, $controller, $action);
+        return $this->addRoute($this->current_request::METHOD_POST, $uri, $action);
     }
 
     public function run()
@@ -37,12 +37,9 @@ class Router
         }
     }
 
-    /**
-     * @return \Core\Routing\Route
-     */
-    protected function addRoute($method, $uri, $controller, $action)
+    protected function addRoute($method, $uri, $action)
     {
-        $route = new Route($method, $uri, $controller, $action);
+        $route = new Route($method, $uri, $action);
         $this->routes[$method][$uri] = $route;
         return $route;
     }

@@ -4,17 +4,15 @@ namespace Core\Routing;
 
 class Route
 {
-    protected $controller;
     protected $action;
     protected $method;
     protected $uri;
     protected $route_params;
 
-    public function __construct($method, $uri, $controller, $action)
+    public function __construct($method, $uri, $action)
     {
         $this->method = $method;
         $this->uri = $uri;
-        $this->controller = $controller;
         $this->action = $action;
     }
 
@@ -35,32 +33,43 @@ class Route
 
     public function dispatchAction($request)
     {
-        $class = "App\\Controllers\\$this->controller";
+        $this->route_params['request'] = $request;
 
-        if (!class_exists($class)) {
-            throw new \Exception("$class does not exist", 500);
-        }
+        if (is_callable($this->action)) {
+            $reflection_function = new \ReflectionFunction($this->action);
+            $args = $this->getNamedParameters($reflection_function);
+            return $reflection_function->invokeArgs($args);
+        } else if (is_array($this->action)) {
+            [$controller, $method] = $this->action;
+            $class = "App\\Controllers\\$controller";
 
-        if (method_exists($class, $this->action)) {
-            $reflection_method = new \ReflectionMethod($class, $this->action);
-            $method_params = $reflection_method->getParameters();
-            $this->route_params['request'] = $request;
-            $args = [];
-
-            foreach ($method_params as $param) {
-                $name = $param->getName();
-                if (array_key_exists($name, $this->route_params)) {
-                    $args[] = $this->route_params[$name];
-                } elseif ($param->isOptional()) {
-                    $args[] = $param->getDefaultValue();
-                } else {
-                    throw new \Exception("Parameter $name  does not exist on $this->action");
-                }
+            if (!class_exists($class)) {
+                throw new \Exception("$class does not exist", 500);
+            } else if (!method_exists($class, $method)) {
+                throw new \Exception("Method $method not found in controller $controller", 500);
             }
 
+            $reflection_method = new \ReflectionMethod($class, $method);
+            $args = $this->getNamedParameters($reflection_method);
             return $reflection_method->invokeArgs(new $class(), $args);
-        } else {
-            throw new \Exception("Action $this->action not found in controller $this->controller", 500);
         }
+    }
+
+    protected function getNamedParameters($reflection)
+    {
+        $method_params = $reflection->getParameters();
+        $args = [];
+        foreach ($method_params as $param) {
+            $name = $param->getName();
+            if (array_key_exists($name, $this->route_params)) {
+                $args[] = $this->route_params[$name];
+            } elseif ($param->isOptional()) {
+                $args[] = $param->getDefaultValue();
+            } else {
+                throw new \Exception("Parameter $name does not exist", 500);
+            }
+        }
+
+        return $args;
     }
 }

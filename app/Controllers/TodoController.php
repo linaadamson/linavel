@@ -30,9 +30,4 @@ class TodoController
         echo $name;
         return json_encode($this->todos);
     }
-
-    public function test()
-    {
-        echo 'working';
-    }
 }
