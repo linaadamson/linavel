@@ -4,7 +4,8 @@ namespace Core\Http;
 class Request
 {
     private $method;
-    private $path;
+    private $full_path;
+    private $parsed_path;
 
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
@@ -14,7 +15,8 @@ class Request
     public function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->path = $_SERVER['REQUEST_URI'];
+        $this->full_path = $_SERVER['REQUEST_URI'];
+        $this->parsed_path = parse_url($_SERVER['REQUEST_URI'])['path'];
     }
 
     public function getMethod()
@@ -22,9 +24,9 @@ class Request
         return $this->method;
     }
 
-    public function getPath()
+    public function getParsedPath()
     {
-        return $this->path;
+        return $this->parsed_path;
     }
 
     public function getQuery()

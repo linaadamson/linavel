@@ -27,7 +27,7 @@ class Router
     public function run()
     {
         try {
-            $route = $this->findRoute($this->current_request->getMethod(), $this->current_request->getPath());
+            $route = $this->findRoute($this->current_request->getMethod(), $this->current_request->getParsedPath());
             if (!$route) {
                 throw new \Exception('Route not found', 404);
             }
