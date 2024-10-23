@@ -11,7 +11,9 @@ $router->get('/linavel/{version}', function ($version) {
     return "Linavel Framework V$version";
 });
 $router->post('/todos', ['TodoController', 'addTodo']);
-$router->get('/todos', ['TodoController', 'getTodos']);
+$router->get('/todos', ['TodoController', 'getTodos'], [
+    \App\Middlewares\Authenticate::class
+]);
 $router->get('/todos/{id:[0-9]+}/{name:[a-z]+}', ['TodoController', 'getOne']);
 
 $router->run();

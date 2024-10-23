@@ -1,6 +1,7 @@
 <?php
 
 namespace Core\Routing;
+use Core\Pipeline;
 
 class Route
 {
@@ -8,12 +9,14 @@ class Route
     protected $method;
     protected $uri;
     protected $route_params;
+    protected $middleware;
 
-    public function __construct($method, $uri, $action)
+    public function __construct($method, $uri, $action, $middleware)
     {
         $this->method = $method;
         $this->uri = $uri;
         $this->action = $action;
+        $this->middleware = $middleware;
     }
 
     public function getPathRegex()
@@ -38,7 +41,8 @@ class Route
         if (is_callable($this->action)) {
             $reflection_function = new \ReflectionFunction($this->action);
             $args = $this->getNamedParameters($reflection_function);
-            return $reflection_function->invokeArgs($args);
+            return $this->invokeAction($request, $this->action, $args);
+            
         } else if (is_array($this->action)) {
             [$controller, $method] = $this->action;
             $class = "App\\Controllers\\$controller";
@@ -51,8 +55,20 @@ class Route
 
             $reflection_method = new \ReflectionMethod($class, $method);
             $args = $this->getNamedParameters($reflection_method);
-            return $reflection_method->invokeArgs(new $class(), $args);
+            return $this->invokeAction($request, [new $class, $method], $args);
         }
+    }
+
+    protected function invokeAction($request, $action, $args)
+    {
+        if (empty($this->middleware)) {
+            return call_user_func_array($action, $args);
+        }
+
+        return (new Pipeline($request))->through($this->middleware)->then(function ($passable) use ($action, $args) {
+            $this->route_params['request'] = $passable;
+            return call_user_func_array($action, $args);
+        });
     }
 
     protected function getNamedParameters($reflection)
