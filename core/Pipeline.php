@@ -56,7 +56,7 @@ class Pipeline
                     $pipeInstance = new $pipe;
                     return $pipeInstance->{$this->method}($passable, $stack);
                 } else {
-                    throw new \Exception('Invalid pipe type.', 500);
+                    throw new \Exception('Pipe type not supported', 500);
                 }
             };
         };
