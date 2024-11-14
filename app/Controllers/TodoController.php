@@ -9,7 +9,7 @@ class TodoController
 
     public function __construct()
     {
-        $this->todos = [];
+        $this->todos = ['todos'];
     }
 
     public function addTodo(Request $request)

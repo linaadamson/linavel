@@ -12,7 +12,8 @@ $router->get('/linavel/{version}', function ($version) {
 });
 $router->post('/todos', ['TodoController', 'addTodo']);
 $router->get('/todos', ['TodoController', 'getTodos'], [
-    \App\Middlewares\Authenticate::class
+    \App\Middlewares\Logger::class,
+    \App\Middlewares\Authenticate::class,
 ]);
 $router->get('/todos/{id:[0-9]+}/{name:[a-z]+}', ['TodoController', 'getOne']);
 
